@@ -26,4 +26,4 @@ run_cli_comp:
 #    CLEANING
 # ===============
 clean:
-	$(RM) **pb2**
+	$(RM) **pb2** tests/out*.txt

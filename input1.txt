@@ -1,3 +1,0 @@
-I,0,localhost:8080
-C,0
-A,localhost:8080
