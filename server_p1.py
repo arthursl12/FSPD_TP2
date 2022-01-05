@@ -11,12 +11,22 @@ import part1_pb2
 import part1_pb2_grpc
 
 log = logging.getLogger(__name__)
-
+stored = {}
 class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
 
     def insert(self, request, context):
-        print(f"GRPC server in insert, ch={request.ch}, s={request.s}")
-        return part1_pb2.IntReply(ret_integer=0)
+        log.debug(f"[GRPC] Insert, ch={request.ch}, s={request.s}")
+        # Check if exists
+        search = stored.get(request.ch)
+        if (search is None):
+            # It does not exist, we can add it and return 0
+            log.debug(f"[GRPC] It does not exist")
+            stored[request.ch] = request.s
+            return part1_pb2.IntReply(ret_integer=0)
+        else:
+            # It exists already, we just return -1
+            log.debug(f"[GRPC] It exists")
+            return part1_pb2.IntReply(ret_integer=-1)
     
     def consult(self, request, context):
         print(f"GRPC server in consult, ch={request.integer}")
