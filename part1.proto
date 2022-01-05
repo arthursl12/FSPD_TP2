@@ -3,7 +3,6 @@ Part 1 services
 */
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 package part1;
 
 service Part1Services {
