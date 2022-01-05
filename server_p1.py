@@ -4,6 +4,7 @@ import argparse
 import logging
 import sys
 from concurrent import futures  # for thread pool
+import threading
 
 import grpc
 
@@ -13,7 +14,9 @@ import part1_pb2_grpc
 log = logging.getLogger(__name__)
 stored = {}
 class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
-
+    def __init__(self, stop_event):
+        self._stop_event = stop_event
+        
     def insert(self, request, context):
         log.debug(f"[GRPC] Insert, ch={request.ch}, s={request.s}")
         # Check if exists
@@ -29,15 +32,26 @@ class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
             return part1_pb2.IntReply(ret_integer=-1)
     
     def consult(self, request, context):
-        print(f"GRPC server in consult, ch={request.integer}")
-        return part1_pb2.ConsultReply(ch=10, s="teste")
+        log.debug(f"[GRPC] Consult, ch={request.integer}")
+        # Check if exists
+        ch = request.integer
+        search = stored.get(ch)
+        if (search is None):
+            # It does not exist, return null (None) string
+            log.debug(f"[GRPC] It does not exist, returning null")
+            return part1_pb2.ConsultReply(ch=0, s=None)
+        else:
+            # It exists already, we just return it and its key
+            log.debug(f"[GRPC] It exists, returning it")
+            return part1_pb2.ConsultReply(ch=ch, s=stored[ch])
     
     def activate(self, request, context):
-        print(f"GRPC server in activate, s={request.s}")
+        print(f"[GRPC] Activate, s={request.s}")
         return part1_pb2.IntReply(ret_integer=0)
     
     def terminate(self, request, context):
-        print(f"GRPC server in terminate")
+        print(f"[GRPC] Terminate")
+        self._stop_event.set()
         return part1_pb2.IntReply(ret_integer=0)
 
 def parseArguments():
@@ -60,12 +74,16 @@ def main():
     # Usage: python server_p1.py port [flag]
     port, control = parseArguments()
     
-    # Start server
+    # Create server
+    stop_event = threading.Event()      # Termination event
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))    
-    part1_pb2_grpc.add_Part1ServicesServicer_to_server(ServicesPart1(),server)
+    part1_pb2_grpc.add_Part1ServicesServicer_to_server(ServicesPart1(stop_event),server)
+    
+    # Start server
     server.add_insecure_port('localhost:'+str(port))
     server.start()
-    server.wait_for_termination()
+    stop_event.wait()   # stop_event to be triggered in termination method
+    server.stop(None)
     
 if __name__ == "__main__":
     

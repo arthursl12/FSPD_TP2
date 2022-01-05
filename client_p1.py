@@ -36,30 +36,35 @@ def executeCommands(stub):
         
         # Execute commands
         if (line[0] == 'I'):
+            # Insert operation
+            # Prints the return value (integer)
             _, ch, dest = line.split(SEPARATOR)
             ch = int(ch)
-            log.debug(f"Insert: {ch} at {dest}")
             response = stub.insert(part1_pb2.InsertRequest(ch=ch, s=dest))
-            print(f"GRPC client received: {response.ret_integer}")
+            print(f"{response.ret_integer}")
         elif (line[0] == 'C'):
+            # Consult operation
+            # Prints the consulted string returned (can be None)
             _, ch = line.split(SEPARATOR)
             ch = int(ch)
-            log.debug(f"Check: {ch}")
             response = stub.consult(part1_pb2.IntRequest(integer=ch))
-            print(f"GRPC client received: {response.ch}, {response.s}")
+            print(f"{response.s}")
         elif (line[0] == 'A'):
+            # Activate operation
+            # Prints the return value (integer), for now, 0
             _, dest = line.split(SEPARATOR)
-            log.debug(f"Activate: {dest}")
             response = stub.activate(part1_pb2.StrRequest(s=dest))
-            print(f"GRPC client received: {response.ret_integer}")
+            print(f"{response.ret_integer}")
         elif (line[0] == 'T'):
-            log.debug(f"Terminate")
+            # Terminate server operation
+            # Prints the return value (integer), i.e., 0 and exits
             response = stub.terminate(part1_pb2.EmptyRequest())
-            print(f"GRPC client received: {response.ret_integer}")
+            print(f"{response.ret_integer}")
             exit()
         else:
-            log.debug(f"Unknown command: {line};")
-    log.debug(f"Finished reading")
+            # Unknown command, just skip it
+            pass
+    # End of commands, client may end now
             
 def main():
     # Usage: python client_p1.py <IP:port>
