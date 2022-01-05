@@ -7,14 +7,14 @@ log = logging.getLogger(__name__)
 SEPARATOR = ','
 
 def parseArguments():
-    # Parsing dos argumentos
+    # Parsing arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("id_servico", help="IP:porta do ponto do servidor")
+    parser.add_argument("id_service", help="IP:port of server")
     args = parser.parse_args()
     
-    # Trata o IP e a porta
+    # Treating arguments
     ip_porta = str(args.id_servico)
-    log.debug(f"Conectaremos a {ip_porta}")
+    log.debug(f"We'll connect to server at {ip_porta}")
     return ip_porta
 
 def main():
