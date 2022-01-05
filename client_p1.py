@@ -4,6 +4,8 @@ import sys
 
 log = logging.getLogger(__name__)
 
+SEPARATOR = ','
+
 def parseArguments():
     # Parsing dos argumentos
     parser = argparse.ArgumentParser()
@@ -23,7 +25,29 @@ def main():
     # (can be redirected from a file via "<" in terminal)
     for line in sys.stdin:
         line = ''.join(line.split())    # Remove all whitespaces from string
-        log.debug(f"Read: {line};")
+        # log.debug(f"Read: {line};")
+        
+        # Parsing commands
+        if (line[0] == 'I'):
+            _, ch, dest = line.split(SEPARATOR)
+            ch = int(ch)
+            log.debug(f"Insert: {ch} at {dest}")
+        elif (line[0] == 'A'):
+            _, dest = line.split(SEPARATOR)
+            log.debug(f"Activate: {dest}")
+        elif (line[0] == 'C'):
+            _, ch = line.split(SEPARATOR)
+            ch = int(ch)
+            log.debug(f"Check: {ch}")
+        elif (line[0] == 'T'):
+            log.debug(f"Terminate")
+            exit()
+        else:
+            log.debug(f"Unknown command: {line};")
+        
+        
+        
+        
     log.debug(f"Finished reading")
         
 
