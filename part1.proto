@@ -1,0 +1,47 @@
+/*
+Part 1 services
+*/
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+package part1;
+
+service Part1Services {
+    rpc insert (InsertRequest) returns (IntReply) {}
+    rpc consult (IntRequest) returns (ConsultReply) {}
+    rpc activate (StrRequest) returns (IntReply) {}
+    rpc terminate (EmptyRequest) returns (IntReply) {}
+}
+
+// Arguments for insert procedure: a key (integer) and a string to be stored
+message InsertRequest{
+    int32 ch = 1;
+    string s = 2;
+}
+
+// Return values from consult procedure: a key (integer) and a string to be stored
+message ConsultReply{
+    int32 ch = 1;
+    string s = 2;
+}
+
+// Simple integer argument
+message IntRequest{
+    int32 integer = 1;
+}
+
+// Simple integer return value
+message IntReply{
+    int32 ret_integer = 1;
+}
+
+// Simple string argument
+message StrRequest{
+    string s = 1;
+}
+
+// No arguments
+message EmptyRequest{
+
+}
+

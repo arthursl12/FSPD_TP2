@@ -1,0 +1,2 @@
+make run_serv_pares_1 arg=8888
+make run_cli_pares arg=localhost:8888 < input1.txt
