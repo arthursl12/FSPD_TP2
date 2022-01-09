@@ -7,7 +7,7 @@ package part1;
 
 service Part1Services {
     rpc insert (InsertRequest) returns (IntReply) {}
-    rpc consult (IntRequest) returns (ConsultReply) {}
+    rpc consult (IntRequest) returns (StrReply) {}
     rpc activate (StrRequest) returns (IntReply) {}
     rpc terminate (EmptyRequest) returns (IntReply) {}
 }
@@ -18,10 +18,9 @@ message InsertRequest{
     string s = 2;
 }
 
-// Return values from consult procedure: a key (integer) and a string to be stored
-message ConsultReply{
-    int32 ch = 1;
-    string s = 2;
+// Return string from consult procedure
+message StrReply{
+    string s = 1;
 }
 
 // Simple integer argument

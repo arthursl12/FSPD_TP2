@@ -39,11 +39,11 @@ class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
         if (search is None):
             # It does not exist, return null (None) string
             log.debug(f"[GRPC] It does not exist, returning null")
-            return part1_pb2.ConsultReply(ch=0, s=None)
+            return part1_pb2.StrReply(s=None)
         else:
             # It exists already, we just return it and its key
             log.debug(f"[GRPC] It exists, returning it")
-            return part1_pb2.ConsultReply(ch=ch, s=stored[ch])
+            return part1_pb2.StrReply(s=stored[ch])
     
     def activate(self, request, context):
         print(f"[GRPC] Activate, s={request.s}")
