@@ -18,6 +18,13 @@ class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
         self._stop_event = stop_event
         
     def insert(self, request, context):
+        """
+        Insert string 's' into dictionary with key 'ch'
+        
+        Returns (via RPC):
+            0 if it was added sucessully
+            -1 if an entry with this key already existed, nothing was done
+        """
         log.debug(f"[GRPC] Insert, ch={request.ch}, s={request.s}")
         # Check if exists
         search = stored.get(request.ch)
@@ -32,6 +39,12 @@ class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
             return part1_pb2.IntReply(ret_integer=-1)
     
     def consult(self, request, context):
+        """
+        Consult dictionary entry with key 'ch'
+        
+        Returns (via RPC):
+            s: the string with key 'ch'. If it doesn't exist, returns None
+        """
         log.debug(f"[GRPC] Consult, ch={request.integer}")
         # Check if exists
         ch = request.integer
@@ -46,10 +59,18 @@ class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
             return part1_pb2.StrReply(s=stored[ch])
     
     def activate(self, request, context):
+        """
+        So far, only returns (via RPC) 0
+        """
         print(f"[GRPC] Activate, s={request.s}")
         return part1_pb2.IntReply(ret_integer=0)
     
     def terminate(self, request, context):
+        """
+        Terminates server execution
+        
+        Returns (via RPC): 0 on sucessfull termination
+        """
         print(f"[GRPC] Terminate")
         self._stop_event.set()
         return part1_pb2.IntReply(ret_integer=0)

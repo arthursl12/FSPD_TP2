@@ -67,7 +67,8 @@ def executeCommands(stub):
     # End of commands, client may end now
             
 def main():
-    # Usage: python client_p1.py <IP:port>
+    # Usage: ./client_p1.py <IP:port>
+    #   Must be given execution permission first (via 'chmod +x client_p1.py')
     ip_porta = parseArguments()
     
     # Connect to server
