@@ -1,0 +1,41 @@
+/*
+Part 2 services 
+(central server services)
+*/
+syntax = "proto3";
+
+package part2;
+
+service Part2Services {
+    rpc register(RegisterRequest) returns (IntReply) {}
+    rpc map(IntRequest) returns (StrReply) {}
+    rpc terminate (EmptyRequest) returns (IntReply) {}
+}
+
+// Arguments for register procedure: the descriptor string of pair server and a
+// list of its stored keys
+message RegisterRequest{
+    string descriptor = 1;
+    repeated int32 keys = 2;
+}
+
+// Return string from consult procedure
+message StrReply{
+    string s = 1;
+}
+
+// Simple integer argument
+message IntRequest{
+    int32 integer = 1;
+}
+
+// Simple integer return value
+message IntReply{
+    int32 ret_integer = 1;
+}
+
+// No arguments
+message EmptyRequest{
+
+}
+

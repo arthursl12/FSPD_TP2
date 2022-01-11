@@ -5,17 +5,19 @@ import logging
 import sys
 from concurrent import futures  # for thread pool
 import threading
+from google.protobuf import descriptor
 
 import grpc
-
-import part1_pb2
-import part1_pb2_grpc
+import part1_pb2, part1_pb2_grpc, part2_pb2, part2_pb2_grpc
 
 log = logging.getLogger(__name__)
 stored = {}
-class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
-    def __init__(self, stop_event):
+
+class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
+    def __init__(self, stop_event, descriptor, activate_part_2):
         self._stop_event = stop_event
+        self.descriptor = descriptor
+        self.activate_part_2 = activate_part_2
         
     def insert(self, request, context):
         """
@@ -60,10 +62,32 @@ class ServicesPart1(part1_pb2_grpc.Part1ServicesServicer):
     
     def activate(self, request, context):
         """
-        So far, only returns (via RPC) 0
+        Part1: Simply returns 0 (via RPC)
+        
+        Part2: Connect pair server (itself) to central server located by 
+        description string passed as parameter and send a RPC to register itself
+        there. Returns the integer returned by the central server. 
         """
-        print(f"[GRPC] Activate, s={request.s}")
-        return part1_pb2.IntReply(ret_integer=0)
+        log.debug(f"Activate is: {self.activate_part_2}")
+        if (self.activate_part_2):
+            print(f"[GRPC] Activate (part2), s={request.s}")
+            
+            # Connect to central server
+            channel = grpc.insecure_channel(request.s)
+            stub = part2_pb2_grpc.Part2ServicesStub(channel)
+            
+            # Register itself there
+            response = stub.register(part2_pb2.RegisterRequest(descriptor=self.descriptor, keys=stored))
+            
+            # Close connection to central server
+            channel.close()
+            
+            # Send response back to client
+            return part1_pb2.IntReply(ret_integer=response.ret_integer)
+        else:
+            # Just return 0
+            print(f"[GRPC] Activate (part1), s={request.s}")
+            return part1_pb2.IntReply(ret_integer=0)
     
     def terminate(self, request, context):
         """
@@ -80,7 +104,7 @@ def parseArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("port", help="port to be used by server")
     parser.add_argument("control", help="control flag", 
-                        nargs='?', default="")
+                        nargs='?', default=None)
     args = parser.parse_args()
     
     # Treating arguments
@@ -92,16 +116,24 @@ def parseArguments():
     return port, control
 
 def main():
-    # Usage: python server_p1.py port [flag]
+    # Usage: ./server_p1.py port [flag]
     port, control = parseArguments()
+    descriptor = 'localhost:'+str(port)
+    
+    # Activate part2 behaviour, if needed
+    activate_part_2 = False
+    if (control is not None):
+        activate_part_2 = True
+    log.debug(f"Activate is: {activate_part_2}")
     
     # Create server
     stop_event = threading.Event()      # Termination event
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))    
-    part1_pb2_grpc.add_Part1ServicesServicer_to_server(ServicesPart1(stop_event),server)
+    part1_pb2_grpc.add_Part1ServicesServicer_to_server(
+        ServicesPairServer(stop_event, descriptor, activate_part_2),server)
     
     # Start server
-    server.add_insecure_port('localhost:'+str(port))
+    server.add_insecure_port(descriptor)
     server.start()
     stop_event.wait()   # stop_event to be triggered in termination method
     server.stop(None)
