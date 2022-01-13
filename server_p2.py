@@ -100,7 +100,7 @@ def main():
     server.add_insecure_port('localhost:'+str(port))
     server.start()
     stop_event.wait()   # stop_event to be triggered in termination method
-    server.stop(None)
+    server.stop(2)      # 2 seconds of grace
     
 if __name__ == "__main__":
     
