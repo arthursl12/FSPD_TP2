@@ -119,7 +119,7 @@ def parseArguments():
 def main():
     # Usage: ./server_p1.py port [flag]
     port, control = parseArguments()
-    descriptor = str(socket.INADDR_ANY)+':'+str(port)
+    descriptor = '0.0.0.0'+':'+str(port)
     
     # Activate part2 behaviour, if needed
     activate_part_2 = False
