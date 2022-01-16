@@ -81,6 +81,7 @@ def main():
     # Connect to central server
     channel = grpc.insecure_channel(ip_porta)
     stub = part2_pb2_grpc.Part2ServicesStub(channel)
+    log.debug(f"Connected to server at {ip_porta}")
     
     # Execute commands
     executeCommands(stub)
