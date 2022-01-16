@@ -2,8 +2,8 @@
 #  RPC COMPILING
 # ===============
 build:
-	@python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. part1.proto
-	@python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. part2.proto
+	@python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. part1.proto
+	@python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. part2.proto
 
 
 # ===============
