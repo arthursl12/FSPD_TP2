@@ -45,8 +45,8 @@ def executeCommands(stub):
             # If key was found, connect to pair server returned and retrieve
             # requested string
             if (response.s != ""):
-                # Prints descriptor of pair server
-                print(f"{response.s}:")
+                # Prints descriptor of pair server (without ending in newline)
+                print(f"{response.s}:",end='')
 
                 # Connect to pair server
                 channel = grpc.insecure_channel(response.s)
@@ -58,6 +58,9 @@ def executeCommands(stub):
 
                 # Close connection to pair server
                 channel.close()
+            else:
+                # Key not found, just print an newline
+                print("")
             
         elif (line[0] == 'T'):
             # Terminate central server operation
