@@ -1,5 +1,5 @@
-localhost:7777:teste9
-localhost:5555:teste4.2
+Arthur-PC.localdomain:7777:teste9
+Arthur-PC.localdomain:5555:teste4.2
 
-localhost:7777:teste9.1
+Arthur-PC.localdomain:7777:teste9.1
 4

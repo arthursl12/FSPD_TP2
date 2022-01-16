@@ -5,6 +5,7 @@ import logging
 import sys
 from concurrent import futures  # for thread pool
 import threading
+import socket
 
 import grpc
 
@@ -97,7 +98,7 @@ def main():
     part2_pb2_grpc.add_Part2ServicesServicer_to_server(ServicesCentralServer(stop_event),server)
     
     # Start server
-    server.add_insecure_port('localhost:'+str(port))
+    server.add_insecure_port(str(socket.INADDR_ANY)+':'+str(port))
     server.start()
     stop_event.wait()   # stop_event to be triggered in termination method
     server.stop(2)      # 2 seconds of grace

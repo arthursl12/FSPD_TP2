@@ -6,6 +6,7 @@ import sys
 from concurrent import futures  # for thread pool
 import threading
 from google.protobuf import descriptor
+import socket
 
 import grpc
 import part1_pb2, part1_pb2_grpc, part2_pb2, part2_pb2_grpc
@@ -14,9 +15,9 @@ log = logging.getLogger(__name__)
 stored = {}
 
 class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
-    def __init__(self, stop_event, descriptor, activate_part_2):
+    def __init__(self, stop_event, port, activate_part_2):
         self._stop_event = stop_event
-        self.descriptor = descriptor
+        self.descriptor = socket.getfqdn()+':'+str(port)
         self.activate_part_2 = activate_part_2
         
     def insert(self, request, context):
@@ -118,7 +119,7 @@ def parseArguments():
 def main():
     # Usage: ./server_p1.py port [flag]
     port, control = parseArguments()
-    descriptor = 'localhost:'+str(port)
+    descriptor = str(socket.INADDR_ANY)+':'+str(port)
     
     # Activate part2 behaviour, if needed
     activate_part_2 = False
@@ -130,7 +131,7 @@ def main():
     stop_event = threading.Event()      # Termination event
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))    
     part1_pb2_grpc.add_Part1ServicesServicer_to_server(
-        ServicesPairServer(stop_event, descriptor, activate_part_2),server)
+        ServicesPairServer(stop_event, port, activate_part_2),server)
     
     # Start server
     server.add_insecure_port(descriptor)

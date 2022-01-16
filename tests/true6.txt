@@ -1,4 +1,4 @@
-localhost:5555:teste4
-localhost:5555:teste4.2
+Arthur-PC.localdomain:5555:teste4
+Arthur-PC.localdomain:5555:teste4.2
 
 
