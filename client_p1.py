@@ -85,7 +85,7 @@ def main():
 
 if __name__ == "__main__":
     # Define logging level 
-    logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
-    # logging.basicConfig()
+    # logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+    logging.basicConfig()
     
     main()

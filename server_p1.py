@@ -71,7 +71,7 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
         """
         log.debug(f"Activate is: {self.activate_part_2}")
         if (self.activate_part_2):
-            print(f"[GRPC] Activate (part2), s={request.s}")
+            log.debug(f"[GRPC] Activate (part2), s={request.s}")
             
             # Connect to central server
             channel = grpc.insecure_channel(request.s)
@@ -87,7 +87,7 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
             return part1_pb2.IntReply(ret_integer=response.ret_integer)
         else:
             # Just return 0
-            print(f"[GRPC] Activate (part1), s={request.s}")
+            log.debug(f"[GRPC] Activate (part1), s={request.s}")
             return part1_pb2.IntReply(ret_integer=0)
     
     def terminate(self, request, context):
@@ -96,7 +96,7 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
         
         Returns (via RPC): 0 on sucessfull termination
         """
-        print(f"[GRPC] Terminate")
+        log.debug(f"[GRPC] Terminate")
         self._stop_event.set()
         return part1_pb2.IntReply(ret_integer=0)
 
@@ -142,7 +142,7 @@ def main():
 if __name__ == "__main__":
     
     # Definir o nível de logging
-    logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
-    # logging.basicConfig()
+    # logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+    logging.basicConfig()
     
     main()

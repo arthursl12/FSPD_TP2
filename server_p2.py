@@ -68,7 +68,7 @@ class ServicesCentralServer(part2_pb2_grpc.Part2ServicesServicer):
         
         Returns (via RPC): how many keys were stored in central server
         """
-        print(f"[GRPC] Terminate")
+        log.debug(f"[GRPC] Terminate")
         self._stop_event.set()
         return part2_pb2.IntReply(ret_integer=len(central_stored))
 
@@ -106,7 +106,7 @@ def main():
 if __name__ == "__main__":
     
     # Definir o nível de logging
-    logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
-    # logging.basicConfig()
+    # logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+    logging.basicConfig()
     
     main()
