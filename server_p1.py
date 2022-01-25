@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
 
 import argparse
-import logging
-import sys
 from concurrent import futures  # for thread pool
 import threading
-from google.protobuf import descriptor
 import socket
 
 import grpc
 import part1_pb2, part1_pb2_grpc, part2_pb2, part2_pb2_grpc
 
-log = logging.getLogger(__name__)
 stored = {}
 
 class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
@@ -28,17 +24,14 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
             0 if it was added sucessully
             -1 if an entry with this key already existed, nothing was done
         """
-        log.debug(f"[GRPC] Insert, ch={request.ch}, s={request.s}")
         # Check if exists
         search = stored.get(request.ch)
         if (search is None):
             # It does not exist, we can add it and return 0
-            log.debug(f"[GRPC] It does not exist")
             stored[request.ch] = request.s
             return part1_pb2.IntReply(ret_integer=0)
         else:
             # It exists already, we just return -1
-            log.debug(f"[GRPC] It exists")
             return part1_pb2.IntReply(ret_integer=-1)
     
     def consult(self, request, context):
@@ -48,17 +41,14 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
         Returns (via RPC):
             s: the string with key 'ch'. If it doesn't exist, returns None
         """
-        log.debug(f"[GRPC] Consult, ch={request.integer}")
         # Check if exists
         ch = request.integer
         search = stored.get(ch)
         if (search is None):
             # It does not exist, return null (None) string
-            log.debug(f"[GRPC] It does not exist, returning null")
             return part1_pb2.StrReply(s=None)
         else:
             # It exists already, we just return it and its key
-            log.debug(f"[GRPC] It exists, returning it")
             return part1_pb2.StrReply(s=stored[ch])
     
     def activate(self, request, context):
@@ -69,10 +59,7 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
         description string passed as parameter and send a RPC to register itself
         there. Returns the integer returned by the central server. 
         """
-        log.debug(f"Activate is: {self.activate_part_2}")
         if (self.activate_part_2):
-            log.debug(f"[GRPC] Activate (part2), s={request.s}")
-            
             # Connect to central server
             channel = grpc.insecure_channel(request.s)
             stub = part2_pb2_grpc.Part2ServicesStub(channel)
@@ -86,8 +73,7 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
             # Send response back to client
             return part1_pb2.IntReply(ret_integer=response.ret_integer)
         else:
-            # Just return 0
-            log.debug(f"[GRPC] Activate (part1), s={request.s}")
+            # Part1 behaviour: just return 0
             return part1_pb2.IntReply(ret_integer=0)
     
     def terminate(self, request, context):
@@ -96,7 +82,6 @@ class ServicesPairServer(part1_pb2_grpc.Part1ServicesServicer):
         
         Returns (via RPC): 0 on sucessfull termination
         """
-        log.debug(f"[GRPC] Terminate")
         self._stop_event.set()
         return part1_pb2.IntReply(ret_integer=0)
 
@@ -110,10 +95,8 @@ def parseArguments():
     
     # Treating arguments
     port = int(args.port)
-    log.debug(f"We'll connect at {port}")
     
     control = args.control
-    if (control): log.debug(f"Control flag is: {control}")
     return port, control
 
 def main():
@@ -125,7 +108,6 @@ def main():
     activate_part_2 = False
     if (control is not None):
         activate_part_2 = True
-    log.debug(f"Activate is: {activate_part_2}")
     
     # Create server
     stop_event = threading.Event()      # Termination event
@@ -140,9 +122,4 @@ def main():
     server.stop(2)      # 2 seconds of grace
     
 if __name__ == "__main__":
-    
-    # Definir o nível de logging
-    # logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
-    logging.basicConfig()
-    
     main()

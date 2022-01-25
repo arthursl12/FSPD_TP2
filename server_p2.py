@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import logging
-import sys
 from concurrent import futures  # for thread pool
 import threading
 import socket
@@ -12,7 +10,6 @@ import grpc
 import part2_pb2
 import part2_pb2_grpc
 
-log = logging.getLogger(__name__)
 central_stored = {}
 
 class ServicesCentralServer(part2_pb2_grpc.Part2ServicesServicer):
@@ -27,7 +24,6 @@ class ServicesCentralServer(part2_pb2_grpc.Part2ServicesServicer):
         Returns (via RPC): 
             i: how many keys were processed
         """
-        log.debug(f"[GRPC] Register, server={request.descriptor}")
         descr = request.descriptor
         i = 0
         
@@ -49,17 +45,14 @@ class ServicesCentralServer(part2_pb2_grpc.Part2ServicesServicer):
             str: descriptor of pair server with requested key
             empty string: this key is not stored in any pair server registered
         """
-        log.debug(f"[GRPC] Map, ch={request.integer}")
         # Check if exists
         ch = request.integer
         search = central_stored.get(ch)
         if (search is None):
             # It is not in any registered server, return empty string (None)
-            log.debug(f"[GRPC] It is not registered, returning null string")
             return part2_pb2.StrReply(s=None)
         else:
             # It is in a server, we return its descriptor
-            log.debug(f"[GRPC] Server found, returning its descriptor")
             return part2_pb2.StrReply(s=central_stored[ch])
     
     def terminate(self, request, context):
@@ -68,7 +61,6 @@ class ServicesCentralServer(part2_pb2_grpc.Part2ServicesServicer):
         
         Returns (via RPC): how many keys were stored in central server
         """
-        log.debug(f"[GRPC] Terminate")
         self._stop_event.set()
         return part2_pb2.IntReply(ret_integer=len(central_stored))
 
@@ -82,14 +74,12 @@ def parseArguments():
     
     # Treating arguments
     port = int(args.port)
-    log.debug(f"We'll connect at {port}")
     
     control = args.control
-    if (control): log.debug(f"Control flag is: {control}")
     return port, control
 
 def main():
-    # Usage: python server_p1.py port [flag]
+    # Usage: python server_p2.py port [flag]
     port, control = parseArguments()
     
     # Create server
@@ -104,9 +94,4 @@ def main():
     server.stop(2)      # 2 seconds of grace
     
 if __name__ == "__main__":
-    
-    # Definir o nível de logging
-    # logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
-    logging.basicConfig()
-    
     main()

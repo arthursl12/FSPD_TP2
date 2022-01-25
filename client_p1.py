@@ -3,8 +3,6 @@
 from __future__ import print_function  # used in stubs
 
 import argparse
-import logging
-import os  # for getpid
 import sys
 
 import grpc
@@ -12,7 +10,6 @@ import grpc
 import part1_pb2
 import part1_pb2_grpc
 
-log = logging.getLogger(__name__)
 
 SEPARATOR = ','
 
@@ -24,7 +21,6 @@ def parseArguments():
     
     # Treating arguments
     ip_porta = str(args.id_service)
-    log.debug(f"We'll connect to server at {ip_porta}")
     return ip_porta
 
 def executeCommands(stub):
@@ -32,7 +28,6 @@ def executeCommands(stub):
     # (can be redirected from a file via "<" in terminal)
     for line in sys.stdin:
         line = ''.join(line.split())    # Remove all whitespaces from string
-        # log.debug(f"Read: {line};")
         
         # Execute commands
         if (line[0] == 'I'):
@@ -74,8 +69,7 @@ def main():
     # Connect to server
     channel = grpc.insecure_channel(ip_porta)
     stub = part1_pb2_grpc.Part1ServicesStub(channel)
-    log.debug(f"Connected to server at {ip_porta}")
-    
+
     # Execute commands
     executeCommands(stub)
     
@@ -84,8 +78,4 @@ def main():
         
 
 if __name__ == "__main__":
-    # Define logging level 
-    # logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
-    logging.basicConfig()
-    
     main()
