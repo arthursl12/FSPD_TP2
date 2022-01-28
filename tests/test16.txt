@@ -1,0 +1,13 @@
+C,1
+I,1,um
+I,2,dois
+I,3,tres
+I,4,quatro
+Qualquer outra coisa é descartada, nem imprime uma linha na saída
+C,2
+C,5
+C,1
+I,3,treis
+C,3
+A,qualquercoisa:12345
+T

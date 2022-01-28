@@ -1,0 +1,44 @@
+# Executando na mesma máquina:
+
+# Disparando o servidor de pares em background; não se espera nenhuma saída
+$ make run_serv_pares_1 arg=5555 > server_output 2>&1 & 
+[1] <número do pid do servidor>
+# Disparando o cliente com localhost nesse caso
+$ make run_cli_pares arg=localhost:5555
+# Vamos consultar por uma chave que (ainda) não foi mapeada para o servidor
+# Esse teste deve dar o mesmo resultado mesmo depois da chave ser inserida
+#     no servidor de pares, mas antes do comand A se enviado.
+C,1
+
+I,1,um
+0
+I,2,dois
+0
+I,3,tres
+0
+I,4,quatro
+0
+Qualquer outra coisa é descartada, nem imprime uma linha na saída
+C,2
+dois
+C,5
+
+C,1
+um
+#Tentar inserir de novo uma chave retorna -1 e não altera a chave
+I,3,treis
+-1
+C,3
+tres
+#O comando de ativação não faz nada, nem confere a descrição do host
+A,qualquercoisa:12345
+0
+T
+0
+# O servidor de pares terminou, jobs deve indicar algo como:
+$ jobs
+[1]-  Exit 0           make run_serv_pares_1 arg=5555 > server_output 2>&1
+# O servidor não deve escrever nada na saída;
+#     se tudo deu certo, o arquivo de redirecionamento está vazio:
+$ cat server_output
+$

@@ -28,4 +28,4 @@ run_cli_central:
 #    CLEANING
 # ===============
 clean:
-	$(RM) **pb2** tests/out*.txt
+	$(RM) **pb2** tests/out*.txt tests/server_output*

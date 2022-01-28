@@ -1,0 +1,11 @@
+I,1,um
+I,2,dois
+I,3,tres
+Qualquer outra coisa é descartada, nem imprime uma linha na saída
+I,4,quatro
+C,2
+C,5
+C,1
+I,3,treis
+C,3
+A,localhost:6666
