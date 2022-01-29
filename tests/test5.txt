@@ -1,3 +1,0 @@
-I,0,teste5
-C,0
-A,localhost:6666

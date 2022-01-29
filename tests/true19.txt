@@ -1,3 +1,0 @@
-Arthur-PC.localdomain:5555:um
-Arthur-PC.localdomain:5555:tres
-4
